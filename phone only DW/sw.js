@@ -2,7 +2,7 @@
 "use strict";
 const CACHE = "dripwriter-phone-only-v1";
 const SHELL = [
-  "./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest",
+  "./", "./index.html", "./styles.css", "./theme.css", "./app.js", "./theme.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png",
   "./ocr/tesseract.min.js", "./ocr/worker.min.js",
   "./ocr/core/tesseract-core-lstm.wasm.js",

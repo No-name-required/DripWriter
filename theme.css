@@ -1,0 +1,94 @@
+/* Dark/light theme overrides. Loaded after the base stylesheets so variable
+   and colour overrides win without touching the original CSS files. */
+
+[data-theme="dark"] {
+  --bg: #0f1420;
+  --card: #171e2e;
+  --ink: #f2f5fa;
+  --ink-soft: #c9d3e3;
+  --muted: #9aa8bf;
+  --faint: #6b7a93;
+  --border: #2b3649;
+  --border-strong: #3b4861;
+  --strong: #3b4861;
+  --accent: #8b83ff;
+  --accent-dark: #7067f5;
+  --accent-soft: #232a4d;
+  --green: #3ddc97;
+  --amber: #ffb454;
+  --red: #ff7a72;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Header toggle */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  margin-left: 4px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Extension popup surfaces */
+[data-theme="dark"] .status-pill { background: #222c3f; color: var(--muted); }
+[data-theme="dark"] .status-pill.is-active,
+[data-theme="dark"] .status-pill.is-done { background: #123026; color: #7ee6ad; }
+[data-theme="dark"] .status-pill.is-paused { background: #3a2c12; color: #ffc86a; }
+[data-theme="dark"] .status-pill.is-error { background: #3a1c1c; color: #ff9a93; }
+[data-theme="dark"] .tabs { background: #222c3f; }
+[data-theme="dark"] .tab.is-active { background: var(--card); color: var(--ink); }
+[data-theme="dark"] .composer-meta { border-top-color: var(--border); }
+[data-theme="dark"] .link-btn:hover { color: var(--ink); }
+[data-theme="dark"] .progress { background: #2b3649; }
+[data-theme="dark"] .progress-bar { background: linear-gradient(90deg, #8b83ff, #635bff); }
+[data-theme="dark"] .duration-field input,
+[data-theme="dark"] .range-inputs input,
+[data-theme="dark"] #durationMin { background: #121a29; color: var(--ink); }
+[data-theme="dark"] .duration-field input:disabled { background: #202839; }
+[data-theme="dark"] .paper { background: #121a29; border-color: var(--border); color: var(--ink); }
+[data-theme="dark"] .badge,
+[data-theme="dark"] .value,
+[data-theme="dark"] .scan-badge { background: var(--accent-soft); color: var(--accent); }
+[data-theme="dark"] .scan-preview { background: #121a29; border-color: var(--border); color: var(--ink); }
+[data-theme="dark"] .scan-spinner { border-color: #39436f; border-top-color: var(--accent); }
+[data-theme="dark"] .log-card { padding-bottom: 8px; }
+[data-theme="dark"] input[type="range"] { background: #2b3649; }
+[data-theme="dark"] .switch-track { background: var(--border-strong); }
+[data-theme="dark"] .switch input:checked + .switch-track { background: var(--accent); }
+[data-theme="dark"] textarea::placeholder,
+[data-theme="dark"] .log-list:empty::after { color: var(--faint); }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3b4861; }
+
+/* PWA surfaces */
+[data-theme="dark"] .pill { background: #222c3f; color: var(--muted); }
+[data-theme="dark"] .pill.on { background: #123026; color: #7ee6ad; }
+[data-theme="dark"] .pill.wait { background: #3a2c12; color: #ffc86a; }
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="url"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] textarea { background: #121a29; color: var(--ink); }
+[data-theme="dark"] .btn-secondary { background: #1c2537; color: var(--ink); border-color: var(--border-strong); }
+[data-theme="dark"] .hint code { background: var(--accent-soft); }
+[data-theme="dark"] .photo { border-top-color: var(--border); }
+[data-theme="dark"] .controls .btn-primary { background: var(--accent); }

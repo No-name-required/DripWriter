@@ -28,6 +28,7 @@ This repository contains the completed browser extension plus the two mobile opt
 - Live preview, progress and activity log.
 - **Photo to sentences**: upload a photo of printed text; OCR runs entirely on the device and the result is split into clean sentences.
 - Offline — nothing is sent to a cloud service for OCR.
+- Dark/light mode toggle in the popup and both PWAs; the choice is remembered locally.
 
 ## Mobile
 
