@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DripWriter Privacy Policy</title>
+  <style>
+    body { max-width: 760px; margin: 40px auto; padding: 0 20px; font-family: system-ui, sans-serif;
+           color: #101828; line-height: 1.6; }
+    h1 { font-size: 28px; }
+    h2 { font-size: 18px; margin-top: 28px; }
+    code { background: #eef2ff; padding: 2px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>DripWriter Privacy Policy</h1>
+  <p>Last updated: 18 November 2026</p>
+
+  <p>DripWriter is a browser extension that types text you provide into a Google Doc or a text field at a human-like pace. This policy explains what the extension does with information.</p>
+
+  <h2>Information we handle</h2>
+  <ul>
+    <li><strong>Your draft text and typing settings</strong> are stored locally in your browser using <code>chrome.storage.local</code>. They are not sent to us or to any server by the extension.</li>
+    <li><strong>Photos you choose to scan</strong> are processed entirely on your device by a locally bundled OCR engine (Tesseract.js). Photos are not uploaded to a cloud service.</li>
+    <li><strong>Text you ask DripWriter to type</strong> is delivered to the active browser tab you selected, so the extension can type it there. It is not sent to a remote server.</li>
+  </ul>
+
+  <h2>Permissions</h2>
+  <p>The extension requests access to tabs and the active tab so it can find the field or Google Doc you are working in, and inject its typing script. It requests storage permission only to remember your draft and settings on your device. It requests access to all URLs because text fields can appear on any website.</p>
+
+  <h2>Optional mobile companion</h2>
+  <p>The optional phone PWA connects to the extension through a relay that you run yourself on your own computer. That relay is not operated by us. If you use the separate phone-only PWA, it talks directly to Google's Docs API under your own Google sign-in; that flow is governed by Google's privacy policy.</p>
+
+  <h2>Third parties</h2>
+  <p>DripWriter does not include analytics, advertising, telemetry, or tracking. The OCR engine and language data are bundled inside the extension package.</p>
+
+  <h2>Data sharing and retention</h2>
+  <p>We do not collect, transmit, or share your personal data. Local data remains on your device until you clear the extension's storage or uninstall it.</p>
+
+  <h2>Contact</h2>
+  <p>For questions about this policy, open an issue at <a href="https://github.com/No-name-required/DripWriter/issues">github.com/No-name-required/DripWriter/issues</a>.</p>
+</body>
+</html>
