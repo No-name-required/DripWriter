@@ -135,11 +135,18 @@
     els.previewText.textContent = "";
     els.preview.classList.add("hidden");
     els.useBtn.disabled = true;
-    setStatus("Reading your picture…", "working");
+    setStatus("Preparing photo…", "working");
 
     try {
+      const prepared = await DripImage.prepare(file);
+      if (!prepared) throw new Error("Could not prepare the image.");
+      setStatus("Reading your picture…", "working");
       const worker = await getWorker();
-      const result = await worker.recognize(file);
+      const result = await DripImage.withTimeout(
+        worker.recognize(prepared),
+        90000,
+        "Reading took too long. Try a smaller, well-lit photo."
+      );
       const raw = (result && result.data && result.data.text) || "";
       const sentences = toSentences(raw);
 

@@ -358,10 +358,17 @@
     $("scanPreviewText").textContent = "";
     $("scanPreview").classList.add("hidden");
     $("useBtn").disabled = true;
-    scanStatus("Reading your picture…", "working");
+    scanStatus("Preparing photo…", "working");
     try {
+      const prepared = await DripImage.prepare(file);
+      if (!prepared) throw new Error("Could not prepare the image.");
+      scanStatus("Reading your picture…", "working");
       const worker = await getWorker();
-      const result = await worker.recognize(file);
+      const result = await DripImage.withTimeout(
+        worker.recognize(prepared),
+        90000,
+        "Reading took too long. Try a smaller, well-lit photo."
+      );
       const sentences = toSentences(result?.data?.text || "");
       if (!sentences) { scanStatus("No readable text found. Try a sharper photo.", "error"); return; }
       lastSentences = sentences;
