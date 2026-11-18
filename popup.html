@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DripWriter</title>
+  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="ocr.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3.5c3.5 4.2 6 7.4 6 10.5a6 6 0 1 1-12 0c0-3.1 2.5-6.3 6-10.5Z" />
+            <path d="M9.5 14.5h5" />
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-name">DripWriter</span>
+          <span class="brand-sub">Human-paced typing</span>
+        </span>
+      </div>
+      <div class="status-pill" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Idle</span>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" id="tabCompose" data-view="compose" role="tab" aria-selected="true">Compose</button>
+      <button class="tab" id="tabSettings" data-view="settings" role="tab" aria-selected="false">Settings</button>
+    </nav>
+
+    <section class="view is-active" id="viewCompose" role="tabpanel">
+      <div class="card composer-card">
+        <div class="card-head">
+          <span class="card-title">Your draft</span>
+          <button class="link-btn" id="clearBtn" type="button">Clear</button>
+        </div>
+        <textarea id="draft" placeholder="Paste the text you want DripWriter to type…"></textarea>
+        <div class="composer-meta">
+          <span id="draftWords">0 words</span>
+          <span class="meta-dot"></span>
+          <span id="estimate">No draft yet</span>
+        </div>
+      </div>
+
+      <div class="card progress-card">
+        <div class="progress-head">
+          <span class="card-title">Progress</span>
+          <span class="progress-pct" id="progressPct">0%</span>
+        </div>
+        <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-meta">
+          <span id="elapsed">00:00:00</span>
+          <span id="progressWpm">— WPM</span>
+          <span id="progressWords">0 / 0 words</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="startBtn" class="btn btn-primary" type="button">Start typing</button>
+        <button id="pauseBtn" class="btn btn-secondary" type="button" disabled>Pause</button>
+        <button id="stopBtn" class="btn btn-secondary" type="button" disabled>Stop</button>
+      </div>
+
+      <div class="card duration-card">
+        <div class="duration-head">
+          <span class="card-title">Target duration</span>
+          <label class="switch" title="Finish near a set time">
+            <input type="checkbox" id="useTargetDuration" />
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="duration-row">
+          <div class="duration-inputs">
+            <label class="duration-field">
+              <input type="number" id="targetMin" min="0" max="10080" step="1" inputmode="numeric" aria-label="Target minutes" />
+              <span>min</span>
+            </label>
+            <label class="duration-field">
+              <input type="number" id="targetSec" min="0" max="59" step="1" inputmode="numeric" aria-label="Target seconds" />
+              <span>sec</span>
+            </label>
+          </div>
+          <span class="duration-note" id="durationNote">Auto pace from WPM</span>
+        </div>
+      </div>
+
+      <div class="card preview-card">
+        <div class="card-head">
+          <span class="card-title">Live preview</span>
+          <span class="preview-sub" id="previewSub">Waiting to start</span>
+        </div>
+        <div class="paper" id="paper">
+          <span id="paperText"></span><span class="caret hidden" id="caret"></span>
+        </div>
+      </div>
+
+      <!-- Photo to sentences: a separate area placed above the history log. -->
+      <section class="card scan-card" id="scanCard">
+        <div class="card-head">
+          <span class="card-title">Photo to sentences</span>
+          <span class="scan-badge">Offline OCR</span>
+        </div>
+        <p class="scan-hint">Upload a photo of printed text from your phone. You can also drop or paste an image here. DripWriter reads it and turns it into clean sentences you can add to your draft.</p>
+        <div class="scan-actions scan-actions-primary">
+          <button id="scanUploadBtn" class="btn btn-primary" type="button">Upload photo</button>
+          <input id="scanUploadInput" class="hidden" type="file" accept="image/*" aria-label="Upload photo from your phone" />
+        </div>
+        <div id="scanStatus" class="scan-status" role="status" aria-live="polite">No image yet</div>
+        <div id="scanPreview" class="scan-preview hidden"><span id="scanPreviewText"></span></div>
+        <div class="scan-actions scan-actions-bottom">
+          <button id="scanUseBtn" class="btn btn-secondary" type="button" disabled>Use in draft</button>
+          <button id="scanClearBtn" class="btn btn-ghost" type="button">Clear</button>
+        </div>
+      </section>
+
+      <div class="card log-card">
+        <div class="card-head">
+          <span class="card-title">Activity</span>
+        </div>
+        <ul id="logList" class="log-list"></ul>
+      </div>
+    </section>
+
+    <section class="view" id="viewSettings" role="tabpanel">
+      <div class="card settings-card">
+        <div class="card-head">
+          <span class="card-title">Typing speed</span>
+          <span class="badge" id="wpmBadge">54–84 WPM</span>
+        </div>
+        <div class="field-row">
+          <label class="field-label" for="wpmMin">WPM range</label>
+          <div class="range-inputs">
+            <input type="number" id="wpmMin" min="20" max="150" step="1" />
+            <span class="range-sep">to</span>
+            <input type="number" id="wpmMax" min="20" max="150" step="1" />
+          </div>
+        </div>
+        <p class="hint">DripWriter picks a new speed inside this range as it types, so the pace never feels fixed.</p>
+        <div class="field">
+          <div class="field-head">
+            <label class="field-label" for="speedVariance">Speed variance</label>
+            <span class="value" id="varianceVal">25%</span>
+          </div>
+          <input type="range" id="speedVariance" min="0" max="80" step="1" />
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-head">
+          <span class="card-title">Realism</span>
+          <span class="badge" id="typoBadge">3% typos</span>
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label class="field-label" for="typoRate">Spelling error chance</label>
+            <span class="value" id="typoVal">3%</span>
+          </div>
+          <input type="range" id="typoRate" min="0" max="15" step="0.5" />
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label class="field-label" for="fixRate">Auto-fix chance</label>
+            <span class="value" id="fixVal">80%</span>
+          </div>
+          <input type="range" id="fixRate" min="0" max="100" step="5" />
+        </div>
+        <p class="hint">Some mistakes are corrected after a short pause. The rest stay in the document.</p>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-head">
+          <span class="card-title">Pacing</span>
+        </div>
+        <label class="switch-row" for="useDuration">
+          <span class="switch-copy">
+            <span class="field-label">Use a target duration</span>
+            <span class="hint block">Stretch or compress the session to finish in a set time.</span>
+          </span>
+          <span class="switch">
+            <input type="checkbox" id="useDuration" />
+            <span class="switch-track"></span>
+          </span>
+        </label>
+        <div class="field-row hidden" id="durationRow">
+          <label class="field-label" for="durationMin">Minutes</label>
+          <input type="number" id="durationMin" min="1" max="10080" step="1" />
+        </div>
+      </div>
+
+      <button id="resetSettings" class="btn btn-ghost" type="button">Reset to defaults</button>
+    </section>
+
+    <footer class="footer">
+      <span class="footer-dot"></span>
+      <span>Runs locally in your browser</span>
+    </footer>
+  </div>
+  <script src="ocr/tesseract.min.js"></script>
+  <script src="ocr.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

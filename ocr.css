@@ -1,0 +1,102 @@
+/* Photo-to-sentences feature. Styles are kept in this separate file so the
+   existing popup.css is left completely untouched. */
+
+.scan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px;
+}
+
+.scan-badge {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #ecfdf3;
+  color: #027a48;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.scan-hint {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+.scan-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.scan-actions-primary .btn {
+  flex: 1;
+  padding: 9px 8px;
+}
+
+.scan-card.is-dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.scan-actions-bottom {
+  justify-content: space-between;
+}
+
+.scan-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 16px;
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.scan-status.is-working {
+  color: var(--accent);
+}
+
+.scan-status.is-done {
+  color: #027a48;
+}
+
+.scan-status.is-error {
+  color: #b42318;
+}
+
+.scan-spinner {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border: 2px solid #c7d2fe;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: scan-spin 0.7s linear infinite;
+}
+
+@keyframes scan-spin {
+  to { transform: rotate(360deg); }
+}
+
+.scan-preview {
+  min-height: 60px;
+  max-height: 132px;
+  overflow-y: auto;
+  padding: 9px 10px;
+  border: 1px solid #eaecf0;
+  border-radius: 10px;
+  background: #fcfcfd;
+  color: #1d2939;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 12.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.scan-preview:empty::after {
+  content: "No text recognized yet";
+  color: var(--faint);
+}

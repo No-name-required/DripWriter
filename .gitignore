@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Logs and OS files
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Local test artifacts
+test-*.html
+*.tmp

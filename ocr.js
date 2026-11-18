@@ -1,0 +1,230 @@
+/* Photo-to-sentences feature.
+   Self-contained and loaded alongside (but never modifying) popup.js.
+   Uses a locally vendored Tesseract.js so it works with no network access. */
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+
+  const els = {
+    card: $("scanCard"),
+    uploadBtn: $("scanUploadBtn"),
+    uploadInput: $("scanUploadInput"),
+    status: $("scanStatus"),
+    preview: $("scanPreview"),
+    previewText: $("scanPreviewText"),
+    useBtn: $("scanUseBtn"),
+    clearBtn: $("scanClearBtn"),
+    draft: $("draft")
+  };
+
+  // All existing markup is optional-guarded: if this file is dropped into a
+  // page without the new UI, it simply does nothing.
+  if (!els.card || !els.uploadInput || !els.draft) return;
+
+  let lastSentences = "";
+  let workerPromise = null;
+
+  function ocrBase() {
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getURL) {
+      return chrome.runtime.getURL("ocr/");
+    }
+    return new URL("ocr/", document.baseURI).href;
+  }
+
+  function setStatus(message, kind) {
+    els.status.className = "scan-status" + (kind ? " is-" + kind : "");
+    els.status.textContent = "";
+    if (kind === "working") {
+      const spinner = document.createElement("span");
+      spinner.className = "scan-spinner";
+      els.status.appendChild(spinner);
+    }
+    els.status.appendChild(document.createTextNode(message));
+  }
+
+  /* ---- Turn raw OCR output into clean sentences ---- */
+
+  function toSentences(raw) {
+    let text = String(raw || "").replace(/\r\n?/g, "\n");
+
+    // Rejoin words that OCR split across a line break, e.g. "exam-\nple".
+    text = text.replace(/(\w)-\n(\w)/g, "$1$2");
+
+    const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
+    const bullet = /^(?:[-•*\u2022\u00b7>]|\d+[.)])\s+/;
+    const chunks = [];
+    let paragraph = [];
+
+    for (const line of lines) {
+      if (bullet.test(line)) {
+        if (paragraph.length) {
+          chunks.push(paragraph.join(" "));
+          paragraph = [];
+        }
+        chunks.push(line.replace(bullet, ""));
+      } else {
+        paragraph.push(line);
+      }
+    }
+    if (paragraph.length) chunks.push(paragraph.join(" "));
+
+    const sentences = [];
+    for (let chunk of chunks) {
+      chunk = chunk
+        .replace(/([.!?])(?=[\p{Lu}\p{Lt}\u201c"'(])/gu, "$1 ")
+        .replace(/([!?])(?=[\p{Ll}])/gu, "$1 ")
+        .replace(/\s+([,.!?;:])/g, "$1")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!chunk) continue;
+
+      // Break a run-on block at real sentence boundaries.
+      const parts = chunk.split(/(?<=[.!?])\s+(?=[\p{L}\p{N}"'(\u201c])/u);
+      for (let part of parts) {
+        part = part.trim();
+        if (!part) continue;
+        part = part.charAt(0).toLocaleUpperCase() + part.slice(1);
+        if (!/[.!?]["')\u201d]?$/.test(part)) {
+          part = part.replace(/[,;:]$/, "") + ".";
+        }
+        sentences.push(part);
+      }
+    }
+
+    return sentences.join(" ");
+  }
+
+  /* ---- Offline OCR engine ---- */
+
+  function getWorker() {
+    if (workerPromise) return workerPromise;
+    if (typeof Tesseract === "undefined") {
+      return Promise.reject(new Error("OCR engine did not load."));
+    }
+
+    const base = ocrBase();
+    workerPromise = Tesseract.createWorker("eng", Tesseract.OEM.LSTM_ONLY, {
+      workerPath: base + "worker.min.js",
+      corePath: base + "core",
+      langPath: base + "lang",
+      workerBlobURL: false,
+      gzip: true,
+      logger: (msg) => {
+        if (msg.status === "recognizing text") {
+          setStatus("Reading text " + Math.round((msg.progress || 0) * 100) + "%", "working");
+        } else if (msg.status === "loading language traineddata" || msg.status === "initializing api") {
+          setStatus("Preparing reader…", "working");
+        }
+      }
+    }).catch((error) => {
+      workerPromise = null;
+      throw error;
+    });
+
+    return workerPromise;
+  }
+
+  async function handleImage(file) {
+    if (!file || !file.type || file.type.indexOf("image/") !== 0) {
+      setStatus("Please choose an image file.", "error");
+      return;
+    }
+
+    lastSentences = "";
+    els.previewText.textContent = "";
+    els.preview.classList.add("hidden");
+    els.useBtn.disabled = true;
+    setStatus("Reading your picture…", "working");
+
+    try {
+      const worker = await getWorker();
+      const result = await worker.recognize(file);
+      const raw = (result && result.data && result.data.text) || "";
+      const sentences = toSentences(raw);
+
+      if (!sentences) {
+        setStatus("No readable text found. Try a sharper, well-lit picture.", "error");
+        return;
+      }
+
+      lastSentences = sentences;
+      els.previewText.textContent = sentences;
+      els.preview.classList.remove("hidden");
+      els.useBtn.disabled = false;
+      setStatus("Text ready — add it to your draft.", "done");
+    } catch (error) {
+      setStatus("Could not read the picture: " + (error && error.message ? error.message : error), "error");
+    }
+  }
+
+  // Every source (upload, drop, paste) runs the exact same OCR flow.
+  function bindInput(input) {
+    input.addEventListener("change", () => {
+      if (input.files && input.files[0]) void handleImage(input.files[0]);
+    });
+  }
+
+  if (els.uploadBtn && els.uploadInput) {
+    els.uploadBtn.addEventListener("click", () => els.uploadInput.click());
+    bindInput(els.uploadInput);
+  }
+
+  // Dropping a photo transferred from a phone, or pasting one from the
+  // clipboard, works too.
+  let dragDepth = 0;
+  els.card.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    dragDepth += 1;
+    els.card.classList.add("is-dragover");
+  });
+  els.card.addEventListener("dragover", (event) => event.preventDefault());
+  els.card.addEventListener("dragleave", (event) => {
+    event.preventDefault();
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (!dragDepth) els.card.classList.remove("is-dragover");
+  });
+  els.card.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dragDepth = 0;
+    els.card.classList.remove("is-dragover");
+    const files = event.dataTransfer && event.dataTransfer.files;
+    if (files && files[0]) void handleImage(files[0]);
+  });
+
+  document.addEventListener("paste", (event) => {
+    const items = event.clipboardData && event.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type && item.type.indexOf("image/") === 0) {
+        const file = item.getAsFile();
+        if (file) {
+          event.preventDefault();
+          void handleImage(file);
+        }
+        break;
+      }
+    }
+  });
+
+  els.useBtn.addEventListener("click", () => {
+    if (!lastSentences) return;
+    const existing = els.draft.value.trim();
+    els.draft.value = existing ? existing + " " + lastSentences : lastSentences;
+    // Let popup.js react (word count, estimate and draft saving) unchanged.
+    els.draft.dispatchEvent(new Event("input", { bubbles: true }));
+    els.useBtn.disabled = true;
+    els.draft.focus();
+    els.draft.setSelectionRange(els.draft.value.length, els.draft.value.length);
+    setStatus("Added to your draft.", "done");
+  });
+
+  els.clearBtn.addEventListener("click", () => {
+    els.uploadInput.value = "";
+    lastSentences = "";
+    els.previewText.textContent = "";
+    els.preview.classList.add("hidden");
+    els.useBtn.disabled = true;
+    setStatus("No image yet");
+  });
+})();

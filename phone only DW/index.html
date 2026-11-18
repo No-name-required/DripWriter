@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#4f46e5" />
+  <title>DripWriter Phone Only</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <span class="logo">✒</span>
+      <div class="brand"><h1>DripWriter</h1><p>Phone only · Google Docs</p></div>
+      <span class="pill" id="authPill"><i id="authDot"></i><span id="authText">Not signed in</span></span>
+    </header>
+
+    <section class="card">
+      <div class="card-head"><h2>Google Docs connection</h2><span class="mini" id="docName">No document</span></div>
+      <p class="hint">Sign in with Google, then paste the link of the Google Doc you want to type into. Everything runs on your phone — no computer needed.</p>
+      <label class="field">Google OAuth Client ID
+        <input id="clientId" type="text" placeholder="123456789-abc....apps.googleusercontent.com" autocomplete="off" />
+      </label>
+      <label class="field">Google Doc link
+        <input id="docLink" type="url" placeholder="https://docs.google.com/document/d/.../edit" />
+      </label>
+      <div class="row">
+        <button id="signInBtn" class="btn btn-primary" type="button">Sign in with Google</button>
+        <button id="signOutBtn" class="btn btn-ghost" type="button">Sign out</button>
+      </div>
+      <p class="hint" id="setupHint"></p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Your draft</h2><button id="clearBtn" class="link" type="button">Clear</button></div>
+      <textarea id="draft" placeholder="Type, paste, or scan text with the photo tool below…"></textarea>
+      <div class="meta"><span id="draftWords">0 words</span><span id="estimate">No draft yet</span></div>
+
+      <div class="photo">
+        <div class="card-head"><h2>Photo to sentences</h2><span class="badge">Offline OCR</span></div>
+        <p class="hint">Upload a photo of printed text. It's read on your phone and turned into clean sentences.</p>
+        <button id="uploadBtn" class="btn btn-primary" type="button">Upload photo</button>
+        <input id="uploadInput" class="hidden" type="file" accept="image/*" aria-label="Upload photo" />
+        <div id="scanStatus" class="scan-status" role="status" aria-live="polite">No image yet</div>
+        <div id="scanPreview" class="scan-preview hidden"><span id="scanPreviewText"></span></div>
+        <div class="row end"><button id="useBtn" class="btn btn-secondary" type="button" disabled>Use in draft</button></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Progress</h2><span id="progressPct">0%</span></div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="meta"><span id="elapsed">00:00:00</span><span id="wpm">— WPM</span><span id="words">0 / 0 words</span></div>
+      <div class="controls">
+        <button id="startBtn" class="btn btn-primary" type="button">Start typing</button>
+        <button id="pauseBtn" class="btn btn-secondary" type="button" disabled>Pause</button>
+        <button id="stopBtn" class="btn btn-secondary" type="button" disabled>Stop</button>
+      </div>
+      <p class="hint" id="runStatus">Idle</p>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Typing speed</h2><span class="badge" id="wpmBadge">54–84 WPM</span></div>
+      <label class="field">WPM range
+        <span class="row"><input id="wpmMin" type="number" min="20" max="149" /><span class="mini">to</span><input id="wpmMax" type="number" min="21" max="150" /></span>
+      </label>
+      <label class="field">Speed variance <span class="mini" id="varianceVal">25%</span><input id="variance" type="range" min="0" max="80" /></label>
+      <label class="field">Spelling error chance <span class="mini" id="typoVal">3%</span><input id="typoRate" type="range" min="0" max="15" step="0.5" /></label>
+      <label class="field">Auto-fix chance <span class="mini" id="fixVal">80%</span><input id="fixRate" type="range" min="0" max="100" step="5" /></label>
+    </section>
+
+    <footer>DripWriter Phone Only · no computer, no relay</footer>
+  </main>
+
+  <script src="ocr/tesseract.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
