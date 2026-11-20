@@ -1,0 +1,40 @@
+/* Originality check — separate stylesheet so popup.css stays untouched. */
+
+.orig-card { display: flex; flex-direction: column; gap: 9px; }
+.orig-state {
+  padding: 3px 7px; border-radius: 999px; background: var(--accent-soft);
+  color: var(--accent); font-size: 10px; font-weight: 700; white-space: nowrap;
+}
+.orig-state.good { background: #ecfdf3; color: #027a48; }
+.orig-state.warn { background: #fffaeb; color: #b54708; }
+.orig-state.bad { background: #fef3f2; color: #b42318; }
+
+.orig-summary {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+  border: 1px solid var(--border); border-radius: 10px; background: #fcfcfd;
+}
+.orig-score { font-size: 22px; font-weight: 800; color: var(--accent); line-height: 1; }
+.orig-copy { color: var(--muted); font-size: 10.5px; line-height: 1.5; }
+
+.orig-list { list-style: none; display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; }
+.orig-list:empty::after { content: "No sentences checked yet"; color: var(--faint); font-size: 10.5px; }
+.orig-item {
+  display: block; width: 100%; text-align: left; padding: 8px 9px; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 9px; background: var(--card);
+  font-family: inherit; font-size: 11px; line-height: 1.5; color: var(--ink-soft);
+}
+.orig-item:hover { border-color: var(--accent); }
+.orig-item.is-selected { border-color: var(--accent); background: var(--accent-soft); }
+.orig-why { display: block; margin-top: 4px; color: var(--amber); font-size: 10px; font-weight: 600; }
+.orig-item.clean .orig-why { color: var(--green); }
+
+.orig-sites { display: flex; flex-wrap: wrap; gap: 6px; }
+.orig-sites button {
+  flex: 1; min-width: 92px; padding: 8px 6px; border: 1px solid var(--strong);
+  border-radius: 9px; background: var(--card); color: var(--ink-soft);
+  font-family: inherit; font-size: 10.5px; font-weight: 700; cursor: pointer;
+}
+.orig-sites button:hover { border-color: var(--accent); color: var(--accent); }
+.orig-sites button:disabled { opacity: .45; cursor: not-allowed; }
+
+.orig-note { color: var(--faint); font-size: 10px; line-height: 1.5; }

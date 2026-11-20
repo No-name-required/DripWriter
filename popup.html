@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="popup.css" />
   <link rel="stylesheet" href="ocr.css" />
   <link rel="stylesheet" href="theme.css" />
+  <link rel="stylesheet" href="plagiarism.css" />
 </head>
 <body>
   <div class="app">
@@ -118,6 +119,27 @@
         </div>
       </section>
 
+      <!-- Originality check: separate area placed above the history log. -->
+      <section class="card orig-card" id="origCard">
+        <div class="card-head">
+          <span class="card-title">Originality check</span>
+          <span class="orig-state" id="origState">Ready</span>
+        </div>
+        <p class="hint">Screens your draft for formulaic and repeated phrasing, then lets you cross-reference any sentence with HumanizeAI, Clever Humanizer and Grammarly.</p>
+        <button id="origRunBtn" class="btn btn-primary" type="button">Check draft</button>
+        <div id="origSummary" class="orig-summary hidden">
+          <span class="orig-score" id="origScore">0%</span>
+          <span class="orig-copy" id="origCopy"></span>
+        </div>
+        <ul id="origList" class="orig-list"></ul>
+        <div class="orig-sites">
+          <button type="button" data-site="humanize" disabled>HumanizeAI</button>
+          <button type="button" data-site="clever" disabled>Clever Humanizer</button>
+          <button type="button" data-site="grammarly" disabled>Grammarly</button>
+        </div>
+        <p class="orig-note">These services have no public plagiarism API, so cross-reference opens the site with the sentence copied to your clipboard.</p>
+      </section>
+
       <div class="card log-card">
         <div class="card-head">
           <span class="card-title">Activity</span>
@@ -204,6 +226,7 @@
   <script src="ocr-image.js"></script>
   <script src="ocr.js"></script>
   <script src="theme.js"></script>
+  <script src="plagiarism.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
