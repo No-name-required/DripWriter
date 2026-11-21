@@ -115,7 +115,11 @@
         );
         return (result && result.data && result.data.text) || "";
       } catch (retryError) {
-        const detail = retryError && retryError.message ? retryError.message : String(retryError);
+        let detail = retryError && retryError.message ? retryError.message : String(retryError);
+        detail = detail.replace(/^(Error:\s*)+/i, "");
+        if (/attempting to read image|unsupported|decode/i.test(detail)) {
+          detail = "This photo format can't be read. Try saving it as JPG or PNG.";
+        }
         throw new Error(detail);
       }
     }
