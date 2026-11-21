@@ -276,16 +276,18 @@
     $("useBtn").disabled = true;
     scanStatus("Preparing photo…", "working");
     try {
-      const prepared = await DripImage.prepare(file);
-      if (!prepared) throw new Error("Could not prepare the image.");
       scanStatus("Reading your picture…", "working");
-      const worker = await getWorker();
-      const result = await DripImage.withTimeout(
-        worker.recognize(prepared),
-        90000,
-        "Reading took too long. Try a smaller, well-lit photo."
-      );
-      const sentences = toSentences(result?.data?.text || "");
+      const raw = (typeof DripOCR !== "undefined")
+        ? await DripOCR.recognize(file, (pct) => scanStatus(`Reading text ${pct}%`, "working"))
+        : await (async () => {
+            const worker = await getWorker();
+            const result = await DripImage.withTimeout(
+              worker.recognize(file), 90000,
+              "Reading took too long. Try a smaller, well-lit photo."
+            );
+            return result?.data?.text || "";
+          })();
+      const sentences = toSentences(raw);
       if (!sentences) { scanStatus("No readable text found. Try a sharper photo.", "error"); return; }
       lastSentences = sentences;
       $("scanPreviewText").textContent = sentences;
@@ -324,6 +326,16 @@
   ["wpmMin", "wpmMax", "variance", "typoRate", "fixRate"].forEach((id) => {
     $(id).addEventListener("input", readSettings);
     $(id).addEventListener("change", readSettings);
+  });
+
+  $("scanManualBtn").addEventListener("click", () => {
+    const value = $("scanManualText").value.trim();
+    if (!value) { scanStatus("Type or paste some text first.", "error"); return; }
+    lastSentences = toSentences(value) || value;
+    $("scanPreviewText").textContent = lastSentences;
+    $("scanPreview").classList.remove("hidden");
+    $("useBtn").disabled = false;
+    scanStatus("Text ready — add it to your draft.", "done");
   });
 
   $("uploadBtn").addEventListener("click", () => $("uploadInput").click());

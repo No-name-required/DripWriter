@@ -100,3 +100,12 @@
   content: "No text recognized yet";
   color: var(--faint);
 }
+
+.scan-manual { display: flex; align-items: center; gap: 6px; }
+.scan-manual input {
+  flex: 1; min-width: 0; height: 32px; padding: 0 9px;
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  background: var(--card); color: var(--ink); font-family: inherit; font-size: 11px; outline: none;
+}
+.scan-manual input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+.scan-manual .link-btn { flex: none; }

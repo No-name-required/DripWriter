@@ -54,6 +54,10 @@
         <input id="uploadInput" class="hidden" type="file" accept="image/*" aria-label="Upload photo" />
         <div id="scanStatus" class="scan-status" role="status" aria-live="polite">No image yet</div>
         <div id="scanPreview" class="scan-preview hidden"><span id="scanPreviewText"></span></div>
+        <div class="scan-manual">
+          <input id="scanManualText" type="text" placeholder="Or type/paste the text yourself…" aria-label="Type text manually" />
+          <button id="scanManualBtn" class="link-btn" type="button">Use text</button>
+        </div>
         <div class="row end">
           <button id="useBtn" class="btn btn-secondary" type="button" disabled>Use in draft</button>
         </div>
@@ -93,6 +97,7 @@
   <script src="ocr/tesseract.min.js"></script>
   <script src="theme.js"></script>
   <script src="ocr-image.js"></script>
+  <script src="ocr-engine.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

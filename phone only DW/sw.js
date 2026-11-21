@@ -1,8 +1,8 @@
 /* DripWriter Phone Only — offline app shell + OCR assets. */
 "use strict";
-const CACHE = "dripwriter-phone-only-v1";
+const CACHE = "dripwriter-phone-only-v2";
 const SHELL = [
-  "./", "./index.html", "./styles.css", "./theme.css", "./app.js", "./theme.js", "./ocr-image.js", "./manifest.webmanifest",
+  "./", "./index.html", "./styles.css", "./theme.css", "./app.js", "./theme.js", "./ocr-image.js", "./ocr-engine.js", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png",
   "./ocr/tesseract.min.js", "./ocr/worker.min.js",
   "./ocr/core/tesseract-core-lstm.wasm.js",

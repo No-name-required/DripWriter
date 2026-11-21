@@ -113,6 +113,10 @@
         </div>
         <div id="scanStatus" class="scan-status" role="status" aria-live="polite">No image yet</div>
         <div id="scanPreview" class="scan-preview hidden"><span id="scanPreviewText"></span></div>
+        <div class="scan-manual">
+          <input id="scanManualText" type="text" placeholder="Or type/paste the text yourself…" aria-label="Type text manually" />
+          <button id="scanManualBtn" class="link-btn" type="button">Use text</button>
+        </div>
         <div class="scan-actions scan-actions-bottom">
           <button id="scanUseBtn" class="btn btn-secondary" type="button" disabled>Use in draft</button>
           <button id="scanClearBtn" class="btn btn-ghost" type="button">Clear</button>
@@ -224,6 +228,7 @@
   </div>
   <script src="ocr/tesseract.min.js"></script>
   <script src="ocr-image.js"></script>
+  <script src="ocr-engine.js"></script>
   <script src="ocr.js"></script>
   <script src="theme.js"></script>
   <script src="plagiarism.js"></script>

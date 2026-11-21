@@ -98,11 +98,12 @@
   /* ---- Offline OCR engine ---- */
 
   function getWorker() {
+    const onProgress = (pct) => setStatus("Reading text " + pct + "%", "working");
+    if (typeof DripOCR !== "undefined") return DripOCR.getWorker(onProgress);
     if (workerPromise) return workerPromise;
     if (typeof Tesseract === "undefined") {
-      return Promise.reject(new Error("OCR engine did not load."));
+      return Promise.reject(new Error("OCR engine did not load. Reload the page."));
     }
-
     const base = ocrBase();
     workerPromise = Tesseract.createWorker("eng", Tesseract.OEM.LSTM_ONLY, {
       workerPath: base + "worker.min.js",
@@ -112,16 +113,13 @@
       gzip: true,
       logger: (msg) => {
         if (msg.status === "recognizing text") {
-          setStatus("Reading text " + Math.round((msg.progress || 0) * 100) + "%", "working");
-        } else if (msg.status === "loading language traineddata" || msg.status === "initializing api") {
-          setStatus("Preparing reader…", "working");
+          onProgress(Math.round((msg.progress || 0) * 100));
         }
       }
     }).catch((error) => {
       workerPromise = null;
       throw error;
     });
-
     return workerPromise;
   }
 
@@ -138,16 +136,29 @@
     setStatus("Preparing photo…", "working");
 
     try {
-      const prepared = await DripImage.prepare(file);
-      if (!prepared) throw new Error("Could not prepare the image.");
       setStatus("Reading your picture…", "working");
-      const worker = await getWorker();
-      const result = await DripImage.withTimeout(
-        worker.recognize(prepared),
-        90000,
-        "Reading took too long. Try a smaller, well-lit photo."
-      );
-      const raw = (result && result.data && result.data.text) || "";
+      let raw = "";
+      if (typeof DripOCR !== "undefined") {
+        raw = await DripOCR.recognize(file, (pct) => setStatus("Reading text " + pct + "%", "working"));
+      } else {
+        let prepared = file;
+        if (typeof DripImage !== "undefined" && DripImage.prepare) {
+          try { prepared = await DripImage.prepare(file) || file; } catch { /* use raw file */ }
+        }
+        const worker = await getWorker();
+        const withTimeout = (typeof DripImage !== "undefined" && DripImage.withTimeout)
+          ? DripImage.withTimeout
+          : (p, ms, msg) => new Promise((resolve, reject) => {
+              const t = setTimeout(() => reject(new Error(msg)), ms);
+              p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+            });
+        const result = await withTimeout(
+          worker.recognize(prepared),
+          90000,
+          "Reading took too long. Try a smaller, well-lit photo."
+        );
+        raw = (result && result.data && result.data.text) || "";
+      }
       const sentences = toSentences(raw);
 
       if (!sentences) {
@@ -173,7 +184,21 @@
   }
 
   if (els.uploadBtn && els.uploadInput) {
-    els.uploadBtn.addEventListener("click", () => els.uploadInput.click());
+    const manualText = $("scanManualText");
+  const manualBtn = $("scanManualBtn");
+  if (manualBtn && manualText) {
+    manualBtn.addEventListener("click", () => {
+      const value = manualText.value.trim();
+      if (!value) { setStatus("Type or paste some text first.", "error"); return; }
+      lastSentences = toSentences(value) || value;
+      els.previewText.textContent = lastSentences;
+      els.preview.classList.remove("hidden");
+      els.useBtn.disabled = false;
+      setStatus("Text ready — add it to your draft.", "done");
+    });
+  }
+
+  els.uploadBtn.addEventListener("click", () => els.uploadInput.click());
     bindInput(els.uploadInput);
   }
 
