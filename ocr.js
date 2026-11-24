@@ -14,7 +14,10 @@
     preview: $("scanPreview"),
     previewText: $("scanPreviewText"),
     useBtn: $("scanUseBtn"),
+    cleanBtn: $("scanCleanBtn"),
     clearBtn: $("scanClearBtn"),
+    manualInput: $("scanManualText"),
+    manualBtn: $("scanManualBtn"),
     draft: $("draft")
   };
 
@@ -176,6 +179,22 @@
     }
   }
 
+  /* ---- Clean text: strip invisible formatting characters ---- */
+
+  function cleanText(text) {
+    if (!text) return "";
+    return text
+      // Zero-width spaces, byte order mark, LTR/RTL marks
+      .replace(/[\u200B\u200C\u200D\u200E\u200F\uFEFF]/g, "")
+      // Bidirectional formatting overrides
+      .replace(/[\u202A-\u202E]/g, "")
+      // Other invisible format / variation characters
+      .replace(/[\u2060-\u206F\uFE00-\uFE0F]/g, "")
+      // Collapse multiple spaces/tabs into one
+      .replace(/[ \t\r\f\v]+/g, " ")
+      .trim();
+  }
+
   // Every source (upload, drop, paste) runs the exact same OCR flow.
   function bindInput(input) {
     input.addEventListener("change", () => {
@@ -185,22 +204,50 @@
 
   if (els.uploadBtn && els.uploadInput) {
     const manualText = $("scanManualText");
-  const manualBtn = $("scanManualBtn");
-  if (manualBtn && manualText) {
-    manualBtn.addEventListener("click", () => {
-      const value = manualText.value.trim();
-      if (!value) { setStatus("Type or paste some text first.", "error"); return; }
-      lastSentences = toSentences(value) || value;
-      els.previewText.textContent = lastSentences;
-      els.preview.classList.remove("hidden");
-      els.useBtn.disabled = false;
-      setStatus("Text ready — add it to your draft.", "done");
-    });
-  }
+    const manualBtn = $("scanManualBtn");
+    if (manualBtn && manualText) {
+      manualBtn.addEventListener("click", () => {
+        const value = manualText.value.trim();
+        if (!value) { setStatus("Type or paste some text first.", "error"); return; }
+        lastSentences = toSentences(value) || value;
+        els.previewText.textContent = lastSentences;
+        els.preview.classList.remove("hidden");
+        els.useBtn.disabled = false;
+        setStatus("Text ready — add it to your draft.", "done");
+      });
+      // Auto-clean pasted text in the manual input
+      manualText.addEventListener("paste", (event) => {
+        event.preventDefault();
+        const text = (event.clipboardData || window.clipboardData).getData("text");
+        if (text) {
+          manualText.value = cleanText(text);
+        }
+      });
+    }
 
-  els.uploadBtn.addEventListener("click", () => els.uploadInput.click());
+    els.uploadBtn.addEventListener("click", () => els.uploadInput.click());
     bindInput(els.uploadInput);
   }
+
+  els.cleanBtn.addEventListener("click", () => {
+    const target = els.preview.classList.contains("hidden")
+      ? els.manualInput
+      : els.previewText;
+    if (!target) return;
+    const current = target.textContent || target.value || "";
+    if (!current.trim()) {
+      setStatus("No text to clean.", "error");
+      return;
+    }
+    const cleaned = cleanText(current);
+    if (els.preview.classList.contains("hidden")) {
+      els.manualInput.value = cleaned;
+    } else {
+      els.previewText.textContent = cleaned;
+      lastSentences = cleaned;
+    }
+    setStatus("Text cleaned.", "done");
+  });
 
   // Dropping a photo transferred from a phone, or pasting one from the
   // clipboard, works too.
