@@ -35,6 +35,15 @@
     </nav>
 
     <section class="view is-active" id="viewCompose" role="tabpanel">
+      <section class="prompt-card">
+        <div class="prompt-head">
+          <span class="prompt-title">ADD THIS INTO YOUR PROMPT BEFORE YOU START</span>
+          <button id="promptToggle" class="link-btn" type="button" aria-expanded="false">▼</button>
+        </div>
+        <div id="promptContent" class="prompt-content hidden">
+          <div class="prompt-box" id="promptText"></div>
+        </div>
+      </section>
       <div class="card composer-card">
         <div class="card-head">
           <span class="card-title">Your draft</span>

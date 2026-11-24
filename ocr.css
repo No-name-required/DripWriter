@@ -184,3 +184,60 @@
   line-height: 1.5;
   margin-top: 8px;
 }
+
+/* Prompt header above draft */
+.prompt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prompt-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.35);
+}
+
+.prompt-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #713f12;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.prompt-btn.link-btn {
+  font-size: 11px;
+  font-weight: 700;
+  color: #713f12;
+  cursor: pointer;
+}
+
+.prompt-content {
+  padding: 0 12px 12px;
+}
+
+.prompt-box {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.prompt-summary {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.hidden { display: none !important; }

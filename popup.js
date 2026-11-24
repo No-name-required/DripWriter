@@ -14,6 +14,8 @@
 
   const STORAGE_KEY = "dripwriterSettings";
   const DRAFT_KEY = "dripwriterDraft";
+  const PROMPT_TEXT = `Write as a human would, with natural flow and personality. Avoid overused AI words and phrases like "in conclusion," "it is important to note," "delve into," "tapestry," "testament to," "navigate," "unlock," "comprehensive," "game-changer," "in today's fast-paced world," "revolutionize," "seamless," and "robust." Use varied sentence lengths—some short, some longer—with occasional fragments. Use contractions (don't, can't, we're) and occasional colloquialisms. Avoid perfectly balanced parallel structures and overly formal transitions. Write like a real person with a distinct voice, not a polite assistant.`;
+
   const $ = (id) => document.getElementById(id);
 
   const els = {
@@ -58,7 +60,10 @@
     targetMin: $("targetMin"),
     targetSec: $("targetSec"),
     durationNote: $("durationNote"),
-    resetSettings: $("resetSettings")
+    resetSettings: $("resetSettings"),
+    promptBtn: $("promptToggle"),
+    promptContent: $("promptContent"),
+    promptText: $("promptText")
   };
 
   let settings = { ...DEFAULT_SETTINGS };
@@ -518,6 +523,14 @@
     updateEstimate();
     saveDraftNow();
     els.draft.focus();
+  });
+
+  els.promptBtn.addEventListener("click", () => {
+    const isOpen = els.promptContent.classList.contains("hidden");
+    els.promptContent.classList.toggle("hidden", !isOpen);
+    els.promptBtn.textContent = isOpen ? "▲" : "▼";
+    els.promptBtn.setAttribute("aria-expanded", String(isOpen));
+    if (isOpen) els.promptText.textContent = PROMPT_TEXT;
   });
 
   const scanImportFileBtn = document.getElementById("scanImportFileBtn");
