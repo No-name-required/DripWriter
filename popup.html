@@ -117,6 +117,11 @@
           <input id="scanManualText" type="text" placeholder="Or type/paste the text yourself…" aria-label="Type text manually" />
           <button id="scanManualBtn" class="link-btn" type="button">Use text</button>
         </div>
+        <div class="scan-actions scan-actions-primary">
+          <label class="field-label" style="font-size:10.5px;color:var(--muted);">Import file:</label>
+          <input id="scanImportFile" class="hidden" type="file" accept=".txt,.md,.text" aria-label="Import text file" />
+          <button id="scanImportFileBtn" class="btn btn-secondary" type="button">Import from file</button>
+        </div>
         <div class="scan-actions scan-actions-bottom">
           <button id="scanUseBtn" class="btn btn-secondary" type="button" disabled>Use in draft</button>
           <button id="scanCleanBtn" class="btn btn-ghost" type="button">Clean text</button>
@@ -130,19 +135,14 @@
           <span class="card-title">Originality check</span>
           <span class="orig-state" id="origState">Ready</span>
         </div>
-        <p class="hint">Screens your draft for formulaic and repeated phrasing, then lets you cross-reference any sentence with HumanizeAI, Clever Humanizer and Grammarly.</p>
+        <p class="hint">Checks your draft paragraph by paragraph for formulaic phrasing, repetitive wording, and AI-like patterns. No external services — runs entirely offline.</p>
         <button id="origRunBtn" class="btn btn-primary" type="button">Check draft</button>
         <div id="origSummary" class="orig-summary hidden">
           <span class="orig-score" id="origScore">0%</span>
           <span class="orig-copy" id="origCopy"></span>
         </div>
         <ul id="origList" class="orig-list"></ul>
-        <div class="orig-sites">
-          <button type="button" data-site="humanize" disabled>HumanizeAI</button>
-          <button type="button" data-site="clever" disabled>Clever Humanizer</button>
-          <button type="button" data-site="grammarly" disabled>Grammarly</button>
-        </div>
-        <p class="orig-note">These services have no public plagiarism API, so cross-reference opens the site with the sentence copied to your clipboard.</p>
+        <p class="orig-note">This is a local heuristic check, not a plagiarism database. It flags patterns commonly found in AI-generated or formulaic writing.</p>
       </section>
 
       <div class="card log-card">

@@ -520,6 +520,29 @@
     els.draft.focus();
   });
 
+  const scanImportFileBtn = document.getElementById("scanImportFileBtn");
+  const scanImportFile = document.getElementById("scanImportFile");
+  if (scanImportFileBtn) {
+    scanImportFileBtn.addEventListener("click", () => {
+      if (scanImportFile) scanImportFile.click();
+    });
+  }
+  if (scanImportFile) {
+    scanImportFile.addEventListener("change", async () => {
+      const file = scanImportFile.files && scanImportFile.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        els.draft.value = text;
+        updateEstimate();
+        saveDraftSoon();
+        els.draft.focus();
+      } catch {
+        setLocalError("Could not read the file.");
+      }
+    });
+  }
+
   els.startBtn.addEventListener("click", startTyping);
   els.pauseBtn.addEventListener("click", togglePause);
   els.stopBtn.addEventListener("click", stopTyping);

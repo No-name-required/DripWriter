@@ -52,6 +52,9 @@
         <p class="hint">Upload a photo of printed text from your phone. DripWriter reads it and turns it into clean sentences. You can also drop or paste an image here.</p>
         <button id="uploadBtn" class="btn btn-primary" type="button">Upload photo</button>
         <input id="uploadInput" class="hidden" type="file" accept="image/*" aria-label="Upload photo" />
+        <label class="field-label" style="font-size:10.5px;color:var(--muted);">Import file:</label>
+        <input id="scanImportFile" class="hidden" type="file" accept=".txt,.md,.text" aria-label="Import text file" />
+        <button id="scanImportFileBtn" class="btn btn-secondary" type="button">Import from file</button>
         <div id="scanStatus" class="scan-status" role="status" aria-live="polite">No image yet</div>
         <div id="scanPreview" class="scan-preview hidden"><span id="scanPreviewText"></span></div>
         <div class="scan-manual">

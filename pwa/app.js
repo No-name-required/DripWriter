@@ -249,6 +249,16 @@
     return sentences.join(" ");
   }
 
+  function cleanText(text) {
+    if (!text) return "";
+    return text
+      .replace(/[\u200B\u200C\u200D\u200E\u200F\uFEFF]/g, "")
+      .replace(/[\u202A-\u202E]/g, "")
+      .replace(/[\u2060-\u206F\uFE00-\uFE0F]/g, "")
+      .replace(/[ \t\r\f\v]+/g, " ")
+      .trim();
+  }
+
   function scanStatus(message, kind) {
     $("scanStatus").className = "scan-status" + (kind ? " is-" + kind : "");
     $("scanStatus").textContent = message;
@@ -341,6 +351,45 @@
   $("uploadBtn").addEventListener("click", () => $("uploadInput").click());
   $("uploadInput").addEventListener("change", () => {
     if ($("uploadInput").files?.[0]) void handleImage($("uploadInput").files[0]);
+  });
+  $("scanImportFileBtn").addEventListener("click", () => {
+    const input = document.getElementById("scanImportFile");
+    if (input) input.click();
+  });
+  const scanImportFile = document.getElementById("scanImportFile");
+  if (scanImportFile) {
+    scanImportFile.addEventListener("change", async () => {
+      const file = scanImportFile.files && scanImportFile.files[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        $("draft").value = text;
+        updateEstimate();
+        save();
+        $("draft").focus();
+      } catch {
+        scanStatus("Could not read the file.", "error");
+      }
+    });
+  }
+  $("scanCleanBtn").addEventListener("click", () => {
+    const target = $("scanPreview").classList.contains("hidden")
+      ? $("scanManualText")
+      : $("scanPreviewText");
+    if (!target) return;
+    const current = target.textContent || target.value || "";
+    if (!current.trim()) {
+      scanStatus("No text to clean.", "error");
+      return;
+    }
+    const cleaned = cleanText(current);
+    if ($("scanPreview").classList.contains("hidden")) {
+      $("scanManualText").value = cleaned;
+    } else {
+      $("scanPreviewText").textContent = cleaned;
+      lastSentences = cleaned;
+    }
+    scanStatus("Text cleaned.", "done");
   });
   $("useBtn").addEventListener("click", () => {
     if (!lastSentences) return;
