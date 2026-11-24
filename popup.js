@@ -9,7 +9,11 @@
     fixRate: 80,
     useDuration: false,
     durationMin: 10,
-    durationSec: 0
+    durationSec: 0,
+    personalDict: "",
+    pausePatterns: false,
+    hapticFeedback: false,
+    voiceLang: "en-US"
   };
 
   const STORAGE_KEY = "dripwriterSettings";
@@ -63,7 +67,11 @@
     resetSettings: $("resetSettings"),
     promptBtn: $("promptToggle"),
     promptContent: $("promptContent"),
-    promptText: $("promptText")
+    promptText: $("promptText"),
+    personalDict: $("personalDict"),
+    pausePatterns: $("pausePatterns"),
+    hapticFeedback: $("hapticFeedback"),
+    voiceLang: $("voiceLang")
   };
 
   let settings = { ...DEFAULT_SETTINGS };
@@ -125,7 +133,11 @@
       fixRate: clamp(Number(s.fixRate) || 0, 0, 100),
       useDuration: Boolean(s.useDuration),
       durationMin: clamp(Number(s.durationMin) || 0, 0, 10080),
-      durationSec: clamp(Math.round(Number(s.durationSec) || 0), 0, 59)
+      durationSec: clamp(Math.round(Number(s.durationSec) || 0), 0, 59),
+      personalDict: String(s.personalDict || ""),
+      pausePatterns: Boolean(s.pausePatterns),
+      hapticFeedback: Boolean(s.hapticFeedback),
+      voiceLang: String(s.voiceLang || "en-US")
     };
   }
 
@@ -208,6 +220,10 @@
     els.targetSec.value = settings.durationSec;
     updateDurationUI();
     updateSettingLabels();
+    els.personalDict.value = settings.personalDict;
+    els.pausePatterns.checked = settings.pausePatterns;
+    els.hapticFeedback.checked = settings.hapticFeedback;
+    els.voiceLang.value = settings.voiceLang;
   }
 
   function updateSettingLabels() {
@@ -588,6 +604,26 @@
     els.durationRow.classList.toggle("hidden", !settings.useDuration);
     updateDurationUI();
     updateEstimate();
+    saveSettingsSoon();
+  });
+
+  els.personalDict.addEventListener("input", () => {
+    settings.personalDict = els.personalDict.value;
+    saveSettingsSoon();
+  });
+
+  els.pausePatterns.addEventListener("change", () => {
+    settings.pausePatterns = els.pausePatterns.checked;
+    saveSettingsSoon();
+  });
+
+  els.hapticFeedback.addEventListener("change", () => {
+    settings.hapticFeedback = els.hapticFeedback.checked;
+    saveSettingsSoon();
+  });
+
+  els.voiceLang.addEventListener("change", () => {
+    settings.voiceLang = els.voiceLang.value;
     saveSettingsSoon();
   });
 
