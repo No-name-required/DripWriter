@@ -18,7 +18,7 @@
 
   const STORAGE_KEY = "dripwriterSettings";
   const DRAFT_KEY = "dripwriterDraft";
-  const PROMPT_TEXT = `Write as a human would, with natural flow and personality. Avoid overused AI words and phrases like "in conclusion," "it is important to note," "delve into," "tapestry," "testament to," "navigate," "unlock," "comprehensive," "game-changer," "in today's fast-paced world," "revolutionize," "seamless," and "robust." Use varied sentence lengths—some short, some longer—with occasional fragments. Use contractions (don't, can't, we're) and occasional colloquialisms. Avoid perfectly balanced parallel structures and overly formal transitions. Write like a real person with a distinct voice, not a polite assistant.`;
+  const PROMPT_TEXT = `Write as a human would with natural flow and personality. Avoid overused AI words and phrases (be predictable, only add some different phrases). Use varied sentence lengths, some short some longer which occasional fragments. use contractions and occasional colloquialisms. AVOID perfectly balanced parallel structures and overly formal transitions. write like a real person either a distinct voice.`;
 
   const $ = (id) => document.getElementById(id);
 
