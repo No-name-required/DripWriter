@@ -71,9 +71,7 @@
     personalDict: $("personalDict"),
     pausePatterns: $("pausePatterns"),
     hapticFeedback: $("hapticFeedback"),
-    voiceLang: $("voiceLang"),
-    claudeImportBtn: $("claudeImportBtn"),
-    claudeImportFile: $("claudeImportFile")
+    voiceLang: $("voiceLang")
   };
 
   let settings = { ...DEFAULT_SETTINGS };
@@ -570,29 +568,6 @@
         els.draft.focus();
       } catch {
         setLocalError("Could not read the file.");
-      }
-    });
-  }
-
-  const claudeImportBtn = document.getElementById("claudeImportBtn");
-  const claudeImportFile = document.getElementById("claudeImportFile");
-  if (claudeImportBtn) {
-    claudeImportBtn.addEventListener("click", () => {
-      if (claudeImportFile) claudeImportFile.click();
-    });
-  }
-  if (claudeImportFile) {
-    claudeImportFile.addEventListener("change", async () => {
-      const file = claudeImportFile.files && claudeImportFile.files[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        els.draft.value = text;
-        updateEstimate();
-        saveDraftSoon();
-        els.draft.focus();
-      } catch {
-        setLocalError("Could not read the Claude output file.");
       }
     });
   }
