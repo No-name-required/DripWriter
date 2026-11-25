@@ -59,7 +59,7 @@
     // Rejoin words that OCR split across a line break, e.g. "exam-\nple".
     text = text.replace(/(\w)-\n(\w)/g, "$1$2");
 
-    const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
+    const lines = text.split("\n").map((line) => line.trim());
     const bullet = /^(?:[-•*\u2022\u00b7>]|\d+[.)])\s+/;
     const chunks = [];
     let paragraph = [];

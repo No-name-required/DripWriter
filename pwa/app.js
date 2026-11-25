@@ -218,7 +218,7 @@
 
   function toSentences(raw) {
     let text = String(raw || "").replace(/\r\n?/g, "\n").replace(/(\w)-\n(\w)/g, "$1$2");
-    const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+    const lines = text.split("\n").map((l) => l.trim());
     const bullet = /^(?:[-•*\u2022\u00b7>]|\d+[.)])\s+/;
     const chunks = [];
     let paragraph = [];
